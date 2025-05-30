@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
-import Pdf from "react-native-pdf";
-import * as FileSystem from "expo-file-system";
 import * as Asset from "expo-asset";
+import * as FileSystem from "expo-file-system";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Dimensions, StyleSheet, View } from "react-native";
+import Pdf from "react-native-pdf";
 
 export default function LocalPDFViewer() {
   const [localPath, setLocalPath] = useState<string | null>(null);
@@ -11,11 +11,14 @@ export default function LocalPDFViewer() {
     const loadPDF = async () => {
       try {
         // 1. Load PDF from assets
-        const asset = Asset.Asset.fromModule(require("../../assets/General Studies_General Studies Paper I.pdf"));
+        const asset = Asset.Asset.fromModule(
+          require("../../assets/General_Studies_Paper_I.pdf")
+        );
         await asset.downloadAsync(); // ensure it's loaded
 
         // 2. Copy to filesystem (only needed once)
-        const dest = FileSystem.documentDirectory + "General Studies_General Studies Paper I.pdf";
+        const dest =
+          FileSystem.documentDirectory + "General_Studies_Paper_I.pdf";
         const file = await FileSystem.getInfoAsync(dest);
         if (!file.exists) {
           await FileSystem.copyAsync({
