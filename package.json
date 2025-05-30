@@ -9,7 +9,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "cache-clean": "cd android && ./gradlew clean && cd .."
+    "cache-clean": "cd android && ./gradlew clean && cd ..",
+    "clean-run-android": "npm run cache-clean && npm run android"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
