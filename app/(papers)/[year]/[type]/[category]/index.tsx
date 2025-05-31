@@ -30,7 +30,8 @@ const getPaperData = (year: string, type: string, category: string) => {
 };
 
 export default function PaperCategoryScreen() {
-  const { year, type, category } = useLocalSearchParams();
+    const { year, type, category } = useLocalSearchParams();
+    console.log("Params:", year, type, category);
   const papers = getPaperData(
     year as string,
     type as string,

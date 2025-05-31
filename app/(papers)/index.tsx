@@ -10,6 +10,7 @@ const years = ["2023", "2022", "2021", "2020", "2019"];
 
 export default function PapersScreen() {
   const navigateToYear = (year: string) => {
+    console.log(`Navigating to year: ${year}`);
     router.push(`/(papers)/${year}`);
   };
 
@@ -24,11 +25,12 @@ export default function PapersScreen() {
         {years.map((year) => (
           <TouchableOpacity
             key={year}
+            style={styles.touchable}
             onPress={() => navigateToYear(year)}
             activeOpacity={0.7}
           >
             <ThemedView style={styles.yearCard}>
-              <ThemedText type="defaultSemiBold" style={styles.yearText}>
+              <ThemedText type="subtitle" style={styles.yearText}>
                 {year}
               </ThemedText>
             </ThemedView>
@@ -56,10 +58,12 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
-  yearCard: {
+  touchable: {
     width: "48%",
-    padding: 20,
     marginBottom: 16,
+  },
+  yearCard: {
+    padding: 20,
     borderRadius: 12,
     backgroundColor: "#f0f0f0",
     alignItems: "center",
@@ -71,6 +75,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   yearText: {
-    fontSize: 20,
+    fontSize: 24,
+    color: "#333",
   },
 });
