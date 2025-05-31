@@ -67,12 +67,7 @@ export default function PaperCategoryScreen() {
           if (isMounted) { // Ensure component is still mounted before state update
             setLoading(false); // Explicitly set loading to false before navigation
           }
-          router.replace({
-            pathname: "/pdf-viewer",
-            params: { uri: encodeURIComponent(paperToView.requirePath) },
-          });
-          // setLoading(false) will be called in finally, isMounted check handles unmounting
-          // After initiating navigation, return to let finally handle any remaining cleanup if needed.
+          router.push(`/(papers)/${year}/${type}/${category}/${encodeURIComponent(paperToView.requirePath)}`);
           return;
         }
       } catch (error) {

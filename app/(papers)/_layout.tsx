@@ -13,7 +13,7 @@ export default function PapersLayout() {
           fontWeight: "bold",
         },
         headerShadowVisible: true,
-        headerBackTitle: "Back"
+        headerBackTitle: "Back",
       }}
     >
       <Stack.Screen name="index" options={{ headerTitle: "UPSC Papers" }} />
@@ -28,6 +28,10 @@ export default function PapersLayout() {
       <Stack.Screen
         name="[year]/[type]/[category]/index"
         options={{ headerTitle: "View Paper" }}
+      />
+      <Stack.Screen
+        name="[year]/[type]/[category]/[filename]"
+        options={{ headerTitle: "" }}
       />
     </Stack>
   );
