@@ -12,6 +12,8 @@ export default function PapersLayout() {
         headerTitleStyle: {
           fontWeight: "bold",
         },
+        headerShadowVisible: true,
+        headerBackTitle: "Back"
       }}
     >
       <Stack.Screen name="index" options={{ headerTitle: "UPSC Papers" }} />
