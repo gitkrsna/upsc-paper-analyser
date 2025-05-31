@@ -3,19 +3,29 @@ import React from "react";
 
 export default function PapersLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: "UPSC Papers" }} />
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#f5f5f5",
+        },
+        headerTintColor: "#333",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+      }}
+    >
+      <Stack.Screen name="index" options={{ headerTitle: "UPSC Papers" }} />
       <Stack.Screen
         name="[year]/index"
-        options={{ title: "Select Paper Type" }}
+        options={{ headerTitle: "Select Paper Type" }}
       />
       <Stack.Screen
         name="[year]/[type]/index"
-        options={{ title: "Select Paper Category" }}
+        options={{ headerTitle: "Select Paper Category" }}
       />
       <Stack.Screen
         name="[year]/[type]/[category]/index"
-        options={{ title: "Papers" }}
+        options={{ headerTitle: "View Paper" }}
       />
     </Stack>
   );
