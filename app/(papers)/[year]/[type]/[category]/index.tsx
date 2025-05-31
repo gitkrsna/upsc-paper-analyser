@@ -1,184 +1,242 @@
-import { useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router"; // Added useRouter, Link
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Dimensions,
+  FlatList,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
-import Pdf from "react-native-pdf";
+// Removed Pdf from "react-native-pdf"
+// Removed Dimensions
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { PaperInfo, getPapers } from "../../../../../utils/paperUtils";
 
 export default function PaperCategoryScreen() {
+  const router = useRouter(); // Initialize router
   const { year, type, category } = useLocalSearchParams();
   console.log("Params:", year, type, category);
 
   const [papers, setPapers] = useState<PaperInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPaper, setSelectedPaper] = useState<PaperInfo | null>(null);
-  const [localPath, setLocalPath] = useState<string | null>(null); // This will now hold the URL directly
+  // Removed selectedPaper state
+  // Removed localPath state
 
-  // Load papers for this category
+  // Load papers for this category and navigate if needed
   useEffect(() => {
-    const loadPapers = async () => {
-      setLoading(true); // Ensure loading is true at the start
+    let isMounted = true;
+
+    const loadPapersAndNavigate = async () => {
+      if (!isMounted) return;
+      setLoading(true);
+
       try {
+        // Ensure params are strings and exist
+        const currentYear = Array.isArray(year) ? year[0] : year;
+        const currentType = Array.isArray(type) ? type[0] : type;
+        const currentCategory = Array.isArray(category)
+          ? category[0]
+          : category;
+
+        if (!currentYear || !currentType || !currentCategory) {
+          console.warn(
+            "PaperCategoryScreen: Missing required parameters (year, type, or category)."
+          );
+          if (isMounted) {
+            setPapers([]);
+            setLoading(false);
+          }
+          return;
+        }
+
         const availablePapers = getPapers(
-          year as string,
-          type as string,
-          category as string
+          currentYear,
+          currentType,
+          currentCategory
         );
+
+        if (!isMounted) return;
 
         setPapers(availablePapers);
 
-        // Automatically select the first paper if available
-        if (availablePapers.length > 0) {
-          setSelectedPaper(availablePapers[0]);
-        } else {
-          setSelectedPaper(null); // Explicitly set to null if no papers
+        if (availablePapers.length === 1 && availablePapers[0]?.requirePath) {
+          // If only one paper, navigate directly to the viewer
+          const paperToView = availablePapers[0];
+          if (isMounted) { // Ensure component is still mounted before state update
+            setLoading(false); // Explicitly set loading to false before navigation
+          }
+          router.replace({
+            pathname: "/pdf-viewer",
+            params: { uri: encodeURIComponent(paperToView.requirePath) },
+          });
+          // setLoading(false) will be called in finally, isMounted check handles unmounting
+          // After initiating navigation, return to let finally handle any remaining cleanup if needed.
+          return;
         }
       } catch (error) {
         console.error("Failed to load papers:", error);
-        setSelectedPaper(null); // Also set to null on error
+        if (isMounted) {
+          setPapers([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    loadPapers();
-  }, [year, type, category]);
+    loadPapersAndNavigate();
 
-  // Set the localPath directly to the requirePath (CDN URL) when selectedPaper changes
-  useEffect(() => {
-    if (selectedPaper?.requirePath) {
-      console.log(`Setting PDF source to URL: ${selectedPaper.requirePath}`);
-      setLocalPath(selectedPaper.requirePath);
-    } else {
-      setLocalPath(null);
-    }
-  }, [selectedPaper]);
+    return () => {
+      isMounted = false;
+    };
+  }, [year, type, category, router]);
+
+  // Removed useEffect for localPath
 
   if (loading) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" />
-        <ThemedText style={{ marginTop: 10 }}>
-          Preparing PDF viewer...
-        </ThemedText>
+        <ThemedText style={{ marginTop: 10 }}>Loading papers...</ThemedText>
       </View>
     );
   }
 
-  if (!selectedPaper || !localPath) {
+  // If execution reaches here after loading, and papers.length is not 1 (or was 1 but navigation hasn't completed/unmounted yet)
+  // We primarily handle the > 0 or 0 cases for displaying list or "no papers" message.
+  // The single paper case is mostly handled by navigation in useEffect.
+
+  if (papers.length === 0) {
     return (
-      <View style={styles.loading}>
-        <ThemedText>No paper selected or path is invalid.</ThemedText>
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.container}>
-      <ThemedView style={styles.header}>
-        <ThemedText type="defaultSemiBold" style={styles.title}>
-          {selectedPaper.title}
+      <ThemedView style={styles.centeredMessageContainer}>
+        <ThemedText type="subtitle">
+          No papers found for this category.
+        </ThemedText>
+        <ThemedText>
+          {`${decodeURIComponent(
+            category as string
+          )} - ${year} (${decodeURIComponent(type as string)})`}
         </ThemedText>
       </ThemedView>
+    );
+  }
 
-      <Pdf
-        source={{ uri: localPath, cache: true }}
-        style={styles.pdf}
-        trustAllCerts={false} // Added for Android SSL handling
-        onLoadComplete={(n, filePath) =>
-          console.log(`Loaded ${n} pages from ${filePath}`)
-        }
-        onError={(err) => console.log("PDF load error:", err)}
-      />
+  // If papers.length > 0 (and not the single paper case that should have navigated)
+  // Display list of papers
+  return (
+    <ThemedView style={styles.container}>
+      <View style={styles.header}>
+        <ThemedText type="title" style={styles.pageTitle}>
+          {`${decodeURIComponent(category as string)}`}
+        </ThemedText>
+        <ThemedText style={styles.subHeader}>
+          {`${year} - ${decodeURIComponent(type as string)} Papers`}
+        </ThemedText>
+        <ThemedText style={styles.instructions}>
+          Please select a paper to view:
+        </ThemedText>
+      </View>
 
-      {papers.length > 1 && (
-        <ThemedView style={styles.paperSelector}>
-          {papers.map((paper) => (
-            <TouchableOpacity
-              key={paper.originalFileName}
-              style={[
-                styles.paperOption,
-                selectedPaper.id === paper.id && styles.selectedPaper,
-              ]}
-              onPress={() => setSelectedPaper(paper)}
-            >
-              <ThemedText
-                type="defaultSemiBold"
-                style={
-                  selectedPaper.id === paper.id ? styles.selectedPaperText : {}
-                }
-              >
-                {paper.fileName}
+      <FlatList
+        data={papers}
+        keyExtractor={(item) => item.id.toString()} // Assuming PaperInfo has a unique id
+        renderItem={({ item }) => (
+          <Link
+            href={{
+              pathname: "/pdf-viewer",
+              params: { uri: encodeURIComponent(item.requirePath) },
+            }}
+            asChild
+          >
+            <TouchableOpacity style={styles.paperItem}>
+              <ThemedText type="defaultSemiBold" style={styles.paperItemTitle}>
+                {item.title}
+              </ThemedText>
+              <ThemedText style={styles.paperItemSubtitle}>
+                {item.fileName}
               </ThemedText>
             </TouchableOpacity>
-          ))}
-        </ThemedView>
-      )}
-    </View>
+          </Link>
+        )}
+        contentContainerStyle={styles.listContentContainer}
+      />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 0,
+    backgroundColor: "#F4F7FC", // Light background for the whole screen
   },
   header: {
-    padding: 16,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 16,
+    backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
+    borderBottomColor: "#E8E8E8",
   },
-  title: {
+  pageTitle: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#2C3E50", // Darker, more professional title color
+    marginBottom: 4,
+  },
+  subHeader: {
     fontSize: 16,
+    color: "#5A6A7A", // Subdued color for secondary header text
+    marginBottom: 8,
+  },
+  instructions: {
+    fontSize: 14,
+    color: "#7F8C9A", // Lighter color for instructional text
   },
   loading: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#F4F7FC",
   },
-  pdf: {
+  centeredMessageContainer: {
     flex: 1,
-    width: Dimensions.get("window").width,
-  },
-  backButton: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  paperSelector: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: "#e0e0e0",
-    flexDirection: "row",
-    flexWrap: "wrap",
     justifyContent: "center",
-    gap: 10,
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#F4F7FC",
   },
-  paperOption: {
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    backgroundColor: "#f0f0f0",
+  listContentContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
-  selectedPaper: {
-    backgroundColor: "#007AFF",
+  paperItem: {
+    backgroundColor: "#FFFFFF",
+    padding: 20, // Generous padding
+    borderRadius: 12,
+    marginBottom: 16, // Space between items
+    shadowColor: "#B0C4DE", // Softer shadow color
+    shadowOffset: {
+      width: 0,
+      height: 3, // Slightly more pronounced shadow
+    },
+    shadowOpacity: 0.3, // More visible shadow
+    shadowRadius: 4.65,
+    elevation: 6, // Elevation for Android
+    borderWidth: 1, // Subtle border
+    borderColor: "#E0E7FF", // Light border color
   },
-  selectedPaperText: {
-    color: "#fff",
+  paperItemTitle: {
+    fontSize: 17,
+    fontWeight: "600", // Semi-bold
+    color: "#34495E", // Strong title color for items
+    marginBottom: 4,
   },
+  paperItemSubtitle: {
+    fontSize: 13,
+    color: "#7F8C9A", // Lighter color for subtitle/filename
+  },
+  // Removed styles: pdf, paperSelector, paperOption, selectedPaper, selectedPaperText, title (old one)
 });
