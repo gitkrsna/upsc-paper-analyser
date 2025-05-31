@@ -1,0 +1,44 @@
+name: Update JSON URLs with Commit SHA
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history to get commit SHA
+
+      - name: Get latest commit SHA
+        id: vars
+        run: echo "COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      - name: Update JSON URLs with commit SHA
+        run: |
+          jq --arg sha "$COMMIT_SHA" '
+            map(
+              .requirePath |= sub("@main"; "@\($sha)")
+            )
+          ' assets/generated-papers.json > assets/generated-papers.tmp.json
+
+          mv assets/generated-papers.tmp.json assets/generated-papers.json
+
+      - name: Commit and push updated JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/generated-papers.json
+
+          # Commit only if changes
+          if ! git diff --cached --quiet; then
+            git commit -m "Update JSON URLs to commit $COMMIT_SHA"
+            git push origin main
+          else
+            echo "No changes in JSON"
+          fi
