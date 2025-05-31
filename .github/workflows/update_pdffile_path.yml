@@ -26,9 +26,9 @@ jobs:
             map(
               .requirePath |= sub("@main"; "@\($sha)")
             )
-          ' assets/papers.json > assets/papers.tmp.json
+          ' assets/config/papers.json > assets/config/papers.tmp.json
 
-          mv assets/papers.tmp.json assets/papers.json
+          mv assets/config/papers.tmp.json assets/config/papers.json
 
       - name: Commit and push updated JSON
         run: |
