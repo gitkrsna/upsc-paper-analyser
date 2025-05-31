@@ -1,0 +1,338 @@
+{
+  "2024/prelims": [
+    {
+      "id": "gs1",
+      "name": "CSAT (GS Paper II)",
+      "folder": "CSAT (GS Paper II)"
+    },
+    {
+      "id": "gs1",
+      "name": "General Studies (GS Paper I)",
+      "folder": "General Studies (GS Paper I)"
+    }
+  ],
+  "2024/mains": [
+    {
+      "id": "literature_subjects",
+      "name": "Literature Subjects",
+      "folder": "Literature Subjects"
+    },
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "folder": "General"
+    },
+    {
+      "id": "optional_subjects",
+      "name": "Optional Subjects",
+      "folder": "Optional Subjects"
+    },
+    {
+      "id": "compulsory_subjects",
+      "name": "Compulsory Subjects",
+      "folder": "Compulsory Subjects"
+    }
+  ],
+  "2023/prelims": [
+    {
+      "id": "gs1",
+      "name": "CSAT (GS Paper II)",
+      "folder": "CSAT (GS Paper II)"
+    },
+    {
+      "id": "gs1",
+      "name": "General Studies (GS Paper I)",
+      "folder": "General Studies (GS Paper I)"
+    }
+  ],
+  "2023/mains": [
+    {
+      "id": "literature_subjects",
+      "name": "Literature Subjects",
+      "folder": "Literature Subjects"
+    },
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "folder": "General"
+    },
+    {
+      "id": "optional_subjects",
+      "name": "Optional Subjects",
+      "folder": "Optional Subjects"
+    },
+    {
+      "id": "compulsory_subjects",
+      "name": "Compulsory Subjects",
+      "folder": "Compulsory Subjects"
+    }
+  ],
+  "2022/prelims": [
+    {
+      "id": "gs1",
+      "name": "CSAT (GS Paper II)",
+      "folder": "CSAT (GS Paper II)"
+    },
+    {
+      "id": "gs1",
+      "name": "General Studies (GS Paper I)",
+      "folder": "General Studies (GS Paper I)"
+    }
+  ],
+  "2022/mains": [
+    {
+      "id": "literature_subjects",
+      "name": "Literature Subjects",
+      "folder": "Literature Subjects"
+    },
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "folder": "General"
+    },
+    {
+      "id": "optional_subjects",
+      "name": "Optional Subjects",
+      "folder": "Optional Subjects"
+    },
+    {
+      "id": "compulsory_subjects",
+      "name": "Compulsory Subjects",
+      "folder": "Compulsory Subjects"
+    }
+  ],
+  "2021/prelims": [
+    {
+      "id": "gs1",
+      "name": "CSAT (GS Paper II)",
+      "folder": "CSAT (GS Paper II)"
+    },
+    {
+      "id": "gs1",
+      "name": "General Studies (GS Paper I)",
+      "folder": "General Studies (GS Paper I)"
+    }
+  ],
+  "2021/mains": [
+    {
+      "id": "literature_subjects",
+      "name": "Literature Subjects",
+      "folder": "Literature Subjects"
+    },
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "folder": "General"
+    },
+    {
+      "id": "optional_subjects",
+      "name": "Optional Subjects",
+      "folder": "Optional Subjects"
+    },
+    {
+      "id": "compulsory_subjects",
+      "name": "Compulsory Subjects",
+      "folder": "Compulsory Subjects"
+    }
+  ],
+  "2020/prelims": [
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    }
+  ],
+  "2020/mains": [
+    {
+      "id": "literature_subjects",
+      "name": "Literature Subjects",
+      "folder": "Literature Subjects"
+    },
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "folder": "General"
+    },
+    {
+      "id": "optional_subjects",
+      "name": "Optional Subjects",
+      "folder": "Optional Subjects"
+    },
+    {
+      "id": "compulsory_subjects",
+      "name": "Compulsory Subjects",
+      "folder": "Compulsory Subjects"
+    }
+  ],
+  "2019/prelims": [
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    }
+  ],
+  "2019/mains": [
+    {
+      "id": "literature_subjects",
+      "name": "Literature Subjects",
+      "folder": "Literature Subjects"
+    },
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "folder": "General"
+    },
+    {
+      "id": "optional_subjects",
+      "name": "Optional Subjects",
+      "folder": "Optional Subjects"
+    },
+    {
+      "id": "compulsory_subjects",
+      "name": "Compulsory Subjects",
+      "folder": "Compulsory Subjects"
+    }
+  ],
+  "2018/prelims": [
+    {
+      "id": "gs1",
+      "name": "CSAT (GS Paper II)",
+      "folder": "CSAT (GS Paper II)"
+    },
+    {
+      "id": "gs1",
+      "name": "General Studies (GS Paper I)",
+      "folder": "General Studies (GS Paper I)"
+    }
+  ],
+  "2018/mains": [
+    {
+      "id": "literature_subjects",
+      "name": "Literature Subjects",
+      "folder": "Literature Subjects"
+    },
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "folder": "General"
+    },
+    {
+      "id": "optional_subjects",
+      "name": "Optional Subjects",
+      "folder": "Optional Subjects"
+    },
+    {
+      "id": "compulsory_subjects",
+      "name": "Compulsory Subjects",
+      "folder": "Compulsory Subjects"
+    }
+  ],
+  "2017/prelims": [
+    {
+      "id": "gs1",
+      "name": "CSAT (GS Paper II)",
+      "folder": "CSAT (GS Paper II)"
+    },
+    {
+      "id": "gs1",
+      "name": "General Studies (GS Paper I)",
+      "folder": "General Studies (GS Paper I)"
+    }
+  ],
+  "2017/mains": [
+    {
+      "id": "literature_subjects",
+      "name": "Literature Subjects",
+      "folder": "Literature Subjects"
+    },
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    },
+    {
+      "id": "optional_subjects",
+      "name": "Optional Subjects",
+      "folder": "Optional Subjects"
+    },
+    {
+      "id": "compulsory_subjects",
+      "name": "Compulsory Subjects",
+      "folder": "Compulsory Subjects"
+    }
+  ],
+  "2016/prelims": [
+    {
+      "id": "gs1",
+      "name": "CSAT (GS Paper II)",
+      "folder": "CSAT (GS Paper II)"
+    },
+    {
+      "id": "gs1",
+      "name": "General Studies (GS Paper I)",
+      "folder": "General Studies (GS Paper I)"
+    }
+  ],
+  "2016/mains": [
+    {
+      "id": "literature_subjects",
+      "name": "Literature Subjects",
+      "folder": "Literature Subjects"
+    },
+    {
+      "id": "indian_languages_compulsory",
+      "name": "Indian Languages (Compulsory)",
+      "folder": "Indian Languages (Compulsory)"
+    },
+    {
+      "id": "general_studies",
+      "name": "General Studies",
+      "folder": "General Studies"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "folder": "General"
+    },
+    {
+      "id": "optional_subjects",
+      "name": "Optional Subjects",
+      "folder": "Optional Subjects"
+    }
+  ]
+}
