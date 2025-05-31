@@ -56,7 +56,7 @@ export default function PaperCategoryScreen() {
   useEffect(() => {
     if (selectedPaper?.requirePath) {
       console.log(`Setting PDF source to URL: ${selectedPaper.requirePath}`);
-      setLocalPath(encodeURIComponent(selectedPaper.requirePath));
+      setLocalPath(selectedPaper.requirePath);
     } else {
       setLocalPath(null);
     }
@@ -90,7 +90,7 @@ export default function PaperCategoryScreen() {
       </ThemedView>
 
       <Pdf
-        source={{ uri: localPath }}
+        source={{ uri: localPath, cache: true }}
         style={styles.pdf}
         trustAllCerts={false} // Added for Android SSL handling
         onLoadComplete={(n, filePath) =>
