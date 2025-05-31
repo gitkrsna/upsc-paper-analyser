@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -11,7 +11,7 @@ import Pdf from "react-native-pdf";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { PaperInfo, getPapers, loadPaperForViewing } from "@/utils/paperUtils";
+import { PaperInfo, getPapers } from "../../../../../utils/paperUtils";
 
 export default function PaperCategoryScreen() {
   const { year, type, category } = useLocalSearchParams();
@@ -20,11 +20,12 @@ export default function PaperCategoryScreen() {
   const [papers, setPapers] = useState<PaperInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPaper, setSelectedPaper] = useState<PaperInfo | null>(null);
-  const [localPath, setLocalPath] = useState<string | null>(null);
+  const [localPath, setLocalPath] = useState<string | null>(null); // This will now hold the URL directly
 
   // Load papers for this category
   useEffect(() => {
     const loadPapers = async () => {
+      setLoading(true); // Ensure loading is true at the start
       try {
         const availablePapers = getPapers(
           year as string,
@@ -37,9 +38,12 @@ export default function PaperCategoryScreen() {
         // Automatically select the first paper if available
         if (availablePapers.length > 0) {
           setSelectedPaper(availablePapers[0]);
+        } else {
+          setSelectedPaper(null); // Explicitly set to null if no papers
         }
       } catch (error) {
         console.error("Failed to load papers:", error);
+        setSelectedPaper(null); // Also set to null on error
       } finally {
         setLoading(false);
       }
@@ -48,52 +52,31 @@ export default function PaperCategoryScreen() {
     loadPapers();
   }, [year, type, category]);
 
-  // Load the selected paper for viewing
+  // Set the localPath directly to the requirePath (CDN URL) when selectedPaper changes
   useEffect(() => {
-    if (selectedPaper) {
-      const loadPDF = async () => {
-        try {
-          const pdfPath = await loadPaperForViewing(selectedPaper);
-          setLocalPath(pdfPath);
-        } catch (err) {
-          console.error("Failed to load local PDF:", err);
-        }
-      };
-
-      loadPDF();
+    if (selectedPaper?.requirePath) {
+      console.log(`Setting PDF source to URL: ${selectedPaper.requirePath}`);
+      setLocalPath(encodeURIComponent(selectedPaper.requirePath));
+    } else {
+      setLocalPath(null);
     }
   }, [selectedPaper]);
 
   if (loading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <ThemedText style={{ marginTop: 10 }}>Loading papers...</ThemedText>
-      </View>
-    );
-  }
-
-  if (!selectedPaper) {
-    return (
-      <ThemedView style={styles.container}>
-        <ThemedText>No papers available for this category.</ThemedText>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ThemedText type="defaultSemiBold">Go Back</ThemedText>
-        </TouchableOpacity>
-      </ThemedView>
-    );
-  }
-
-  if (!localPath) {
-    return (
-      <View style={styles.loading}>
         <ActivityIndicator size="large" />
         <ThemedText style={{ marginTop: 10 }}>
           Preparing PDF viewer...
         </ThemedText>
+      </View>
+    );
+  }
+
+  if (!selectedPaper || !localPath) {
+    return (
+      <View style={styles.loading}>
+        <ThemedText>No paper selected or path is invalid.</ThemedText>
       </View>
     );
   }
@@ -109,6 +92,7 @@ export default function PaperCategoryScreen() {
       <Pdf
         source={{ uri: localPath }}
         style={styles.pdf}
+        trustAllCerts={false} // Added for Android SSL handling
         onLoadComplete={(n, filePath) =>
           console.log(`Loaded ${n} pages from ${filePath}`)
         }
@@ -119,7 +103,7 @@ export default function PaperCategoryScreen() {
         <ThemedView style={styles.paperSelector}>
           {papers.map((paper) => (
             <TouchableOpacity
-              key={paper.id}
+              key={paper.originalFileName}
               style={[
                 styles.paperOption,
                 selectedPaper.id === paper.id && styles.selectedPaper,
@@ -132,7 +116,7 @@ export default function PaperCategoryScreen() {
                   selectedPaper.id === paper.id ? styles.selectedPaperText : {}
                 }
               >
-                {paper.title}
+                {paper.fileName}
               </ThemedText>
             </TouchableOpacity>
           ))}
