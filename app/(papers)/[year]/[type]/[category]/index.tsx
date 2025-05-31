@@ -1,5 +1,3 @@
-import * as Asset from "expo-asset";
-import * as FileSystem from "expo-file-system";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -13,58 +11,50 @@ import Pdf from "react-native-pdf";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-
-// Sample paper data (hardcoded for now)
-const getPaperData = (year: string, type: string, category: string) => {
-  // In a real app, this would come from an API or database
-  // For now, we're using our single PDF for all options
-  return [
-    {
-      id: "1",
-      title: `UPSC ${
-        type === "prelims" ? "Preliminary" : "Main"
-      } Exam ${year} - ${category.toUpperCase()}`,
-      pdf: "General_Studies_Paper_I.pdf",
-    },
-  ];
-};
+import { PaperInfo, getPapers, loadPaperForViewing } from "@/utils/paperUtils";
 
 export default function PaperCategoryScreen() {
-    const { year, type, category } = useLocalSearchParams();
-    console.log("Params:", year, type, category);
-  const papers = getPaperData(
-    year as string,
-    type as string,
-    category as string
-  );
+  const { year, type, category } = useLocalSearchParams();
+  console.log("Params:", year, type, category);
 
-  const [selectedPaper, setSelectedPaper] = useState<null | (typeof papers)[0]>(
-    null
-  );
+  const [papers, setPapers] = useState<PaperInfo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedPaper, setSelectedPaper] = useState<PaperInfo | null>(null);
   const [localPath, setLocalPath] = useState<string | null>(null);
 
+  // Load papers for this category
+  useEffect(() => {
+    const loadPapers = async () => {
+      try {
+        const availablePapers = getPapers(
+          year as string,
+          type as string,
+          category as string
+        );
+
+        setPapers(availablePapers);
+
+        // Automatically select the first paper if available
+        if (availablePapers.length > 0) {
+          setSelectedPaper(availablePapers[0]);
+        }
+      } catch (error) {
+        console.error("Failed to load papers:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPapers();
+  }, [year, type, category]);
+
+  // Load the selected paper for viewing
   useEffect(() => {
     if (selectedPaper) {
       const loadPDF = async () => {
         try {
-          // 1. Load PDF from assets using absolute import path
-          const asset = Asset.Asset.fromModule(
-            require("@/assets/General_Studies_Paper_I.pdf")
-          );
-          await asset.downloadAsync(); // ensure it's loaded
-
-          // 2. Copy to filesystem (only needed once)
-          const dest = FileSystem.documentDirectory + selectedPaper.pdf;
-          const file = await FileSystem.getInfoAsync(dest);
-          if (!file.exists) {
-            await FileSystem.copyAsync({
-              from: asset.localUri!,
-              to: dest,
-            });
-          }
-
-          // 3. Set the raw file path
-          setLocalPath(dest);
+          const pdfPath = await loadPaperForViewing(selectedPaper);
+          setLocalPath(pdfPath);
         } catch (err) {
           console.error("Failed to load local PDF:", err);
         }
@@ -74,12 +64,14 @@ export default function PaperCategoryScreen() {
     }
   }, [selectedPaper]);
 
-  // When first loaded, automatically select the first paper
-  useEffect(() => {
-    if (papers.length > 0 && !selectedPaper) {
-      setSelectedPaper(papers[0]);
-    }
-  }, [papers, selectedPaper]);
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <ThemedText style={{ marginTop: 10 }}>Loading papers...</ThemedText>
+      </View>
+    );
+  }
 
   if (!selectedPaper) {
     return (
@@ -99,6 +91,9 @@ export default function PaperCategoryScreen() {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" />
+        <ThemedText style={{ marginTop: 10 }}>
+          Preparing PDF viewer...
+        </ThemedText>
       </View>
     );
   }
@@ -110,6 +105,7 @@ export default function PaperCategoryScreen() {
           {selectedPaper.title}
         </ThemedText>
       </ThemedView>
+
       <Pdf
         source={{ uri: localPath }}
         style={styles.pdf}
@@ -118,6 +114,30 @@ export default function PaperCategoryScreen() {
         }
         onError={(err) => console.log("PDF load error:", err)}
       />
+
+      {papers.length > 1 && (
+        <ThemedView style={styles.paperSelector}>
+          {papers.map((paper) => (
+            <TouchableOpacity
+              key={paper.id}
+              style={[
+                styles.paperOption,
+                selectedPaper.id === paper.id && styles.selectedPaper,
+              ]}
+              onPress={() => setSelectedPaper(paper)}
+            >
+              <ThemedText
+                type="defaultSemiBold"
+                style={
+                  selectedPaper.id === paper.id ? styles.selectedPaperText : {}
+                }
+              >
+                {paper.title}
+              </ThemedText>
+            </TouchableOpacity>
+          ))}
+        </ThemedView>
+      )}
     </View>
   );
 }
@@ -150,5 +170,31 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     borderRadius: 8,
     alignItems: "center",
+  },
+  paperSelector: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    padding: 10,
+    borderTopWidth: 1,
+    borderColor: "#e0e0e0",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 10,
+  },
+  paperOption: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    backgroundColor: "#f0f0f0",
+  },
+  selectedPaper: {
+    backgroundColor: "#007AFF",
+  },
+  selectedPaperText: {
+    color: "#fff",
   },
 });
